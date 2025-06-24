@@ -26,12 +26,54 @@ ADVANCED ENCRYPTION STANDARD
 
 AES (Advanced Encryption Standard) is a highly secure symmetric block cipher that encrypts data in fixed 128-bit blocks using 128 keys. The algorithm's strength lies in its substitution-permutation network structure
 
+AES Key Expansion:
+
+Expands original key (128 bits) into 10 round keys.
+Uses RotWord, SubWord, and Rcon for transformation.
+Produces one round key per AES round (plus initial key).
+
+AES Encryption:
+
+Initial Round: XOR input block with initial round key.
+Rounds (10): Apply SubBytes → ShiftRows → MixColumns → AddRoundKey.
+Final Round: Same as above but without MixColumns.
+
+ AES Decryption:
+ 
+Initial Step: XOR ciphertext with final round key.
+Rounds: Apply Inverse ShiftRows → Inverse SubBytes → AddRoundKey → Inverse MixColumns.
+Final Round: Skip Inverse MixColumns.
+
+
+![image](https://github.com/user-attachments/assets/abbff36a-dda2-44df-96b7-d26f0c31fb8e)
+
+
 DIFFIE-HELLMAN KEY EXCHANGE
+
+![image](https://github.com/user-attachments/assets/98a1d9f0-9f96-4d4d-96d0-0dacf3c6843f)
+
 
 In a typical Diffie-Hellman key exchange, individuals agree on a large prime number and a base known as a generator. Each participant selects a private key that they keep confidential and uses it to calculate the public value through exponentiation. These public values are then openly exchanged between the participants. Upon receiving the public value from the other party, each one performs another exponentiation with their private key, eventually resulting in the same shared secret key. This key can then be utilized in symmetric encryption algorithms to ensure the confidentiality and integrity of their communications.
 The elegance of the Diffie-Hellman approach is found in its capacity to securely create a shared secret without the necessity for the two participants to physically meet or exchange their private keys, thereby addressing major risks linked to key distribution in conventional communication methods. Consequently, it provides a strong solution for secure communication in an environment where eavesdropping and the interception of public channels are common.
 
+STEP 1:
+Consider two individuals Shiva and Parikshith, they select a prime number ‘p’ and base generator ‘g’. These values are meant to be public.
+
+STEP 2:
+Shiva picks a private key: a (Values: 1 < a < p-1)
+Parikshith picks a private key: b (Values: 1 < b < p-1)
+They compute public keys, which is given by:
+Shiva: A = ga mod p
+Parikshith: B = gb mod p
+
+STEP 3:
+After exchanging the public keys, Shiva computes the shared secret S = Ba mod p, and Parikshith computes shared secret S = Ab mod p. The shared secret key remains common for both participants due to modular arithmetic. Thus, symmetric key is generated for encrypting and decrypting the communication
+
+
 Hybrid Model for End-to-End Communication
+
+![image](https://github.com/user-attachments/assets/3aa28db1-c36b-43ac-9b26-f0c6d6f1e60a)
+
 
 Figure 5 illustrates how asymmetric encryption enables secure end-to-end communication between two users, Shiva, and Parikshith. Shiva encrypts a thier message using Parikshith’s public key, ensuring that only Parikshith can decrypt it using his private key. Even if the message is intercepted during transmission, it remains unreadable to others, as only the corresponding private key can unlock it. This method ensures confidentiality, authenticity, and data protection, making it ideal for secure digital communication.
 Taking an example of WhatsApp, it utilizes the Signal Protocol for end-to-end encryption, which employs Curve25519 for key exchange, AES-256 for symmetric encryption, and HMAC-SHA256 for message authentication. The Signal Protocol also incorporates the Double Ratchet Algorithm and X3DH (Extended Triple Diffie-Hellman) handshake to ensure strong security. Similarly, WhatsApp, this project uses AES-128 for symmetric and Diffie-Hellman for Key Exchange. This implies the key generated initially is generated from the Diffie-Hellman key exchange protocol, and the AES Key generation algorithm uses this key to generate 10 separate round keys for encryption and decryption of ciphertext.
@@ -40,16 +82,20 @@ It is an integrated circuit that can be programmed and reconfigured based on use
 
 
 METHODOLOGY AND WORKING
+
+![image](https://github.com/user-attachments/assets/557f94fc-6009-4de1-9106-44a10e2d2e14)
+
  
 Shiva to Parikshith Communication Line
 Figure shows the one-way communication step between Users Shiva and Parikshith. In this diagram, as data is sent from Shiva to Parikshith, Encryption takes place in Shiva’s block, and Decryption in Parikshith’s block. Each user’s block contains a Diffie-Hellman Module, an Encryption module, a Decryption module, and a key generation module.
 The initial stage (1) starts with the User’s DH blocks containing their unique private key and the same prime number p and g. Using the mod function, the initial public keys are generated and exchanged between the two users. As Shiva attains Parikshith’s public key and vice versa, using the same mod function, Shiva uses the exchanged public key to generate a symmetric key, and Parikshith also performs the same. The resulting public keys are the same, which can be generated into the same 10-round keys by the AES key generation block as shown in step (2). The data/plaintext to be sent from Shiva is now encrypted (3) using the round keys, and the ciphertext is now transferred to Parikshith (4). In the end, this data is finally decrypted (5) by the decryption module using the same round keys, and the plaintext is obtained. 
 The exchanged data between the 2 users is the public keys and the encrypted key. If one gets hold of this data, public keys cannot be used to crack the ciphertext unless the value of the Prime number p and g from the Diffie-Hellman modules are known. This way, the data can be exchanged securely between users.
+
+![image](https://github.com/user-attachments/assets/cc935cac-3ee6-4851-83ae-441ac9f7e323)
+
  
 Parikshith to Shiva Communication Line
 Figure explains the end-to-end communication between Shiva and Parikshith, where reverse communication takes place. Parikshith sends the data to Shiva, where initially the public keys are exchanged, and the symmetric keys are generated for the respective DH blocks, and the round keys are generated, which allows Parikshith to encrypt the data and Shiva to decrypt the message.
-
-
 
 
 
@@ -143,6 +189,15 @@ Total clock cycles: 280
 The parameter depicts the clock utilization for a complete 1 round of end-to-end communications. 
 
 WAVEFORMS
+
+![image](https://github.com/user-attachments/assets/6bd1c1d4-d9d2-4cf8-8380-3309408fd6f4)
+
+![image](https://github.com/user-attachments/assets/2854ea5f-3d16-4ab1-898c-9b3130fc7b24)
+
+![image](https://github.com/user-attachments/assets/11cb2353-23c1-48e2-8f95-3e6bcc86c9f5)
+
+![image](https://github.com/user-attachments/assets/3a99585a-1606-4d8a-8cf3-a05c9c694fbd)
+
 
  
 
